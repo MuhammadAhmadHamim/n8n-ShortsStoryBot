@@ -177,6 +177,26 @@ Variety       →  AI rotates story types — infinite, never repeats
 RPM           →  $12 – $16
 Uploads       →  1 per day, fully hands-off
 ```
+---
+
+## ◈ Skills This Project Demonstrates
+
+<div align="center">
+
+![](https://img.shields.io/badge/Python-Flask%20Server%20Design-1a0010?style=flat-square&logo=python&logoColor=e0e0e0)
+![](https://img.shields.io/badge/Python-Async%20Threading-e0e0e0?style=flat-square&logo=python&logoColor=black)
+![](https://img.shields.io/badge/n8n-Workflow%20Automation-1a0010?style=flat-square&logo=node.js&logoColor=e0e0e0)
+![](https://img.shields.io/badge/FFmpeg-Video%20Processing-e0e0e0?style=flat-square&logo=ffmpeg&logoColor=black)
+![](https://img.shields.io/badge/REST%20APIs-Multi%20Service%20Integration-1a0010?style=flat-square&logo=fastapi&logoColor=e0e0e0)
+![](https://img.shields.io/badge/YouTube%20API-OAuth%202.0%20%26%20Upload-e0e0e0?style=flat-square&logo=youtube&logoColor=black)
+![](https://img.shields.io/badge/Google%20Sheets%20API-Automated%20Logging-1a0010?style=flat-square&logo=googlesheets&logoColor=e0e0e0)
+![](https://img.shields.io/badge/Edge%20TTS-Voice%20Synthesis-e0e0e0?style=flat-square&logo=microsoft&logoColor=black)
+![](https://img.shields.io/badge/Pexels%20API-Dynamic%20Media%20Fetching-1a0010?style=flat-square&logo=pexels&logoColor=e0e0e0)
+![](https://img.shields.io/badge/Prompt%20Engineering-AI%20Script%20Generation-e0e0e0?style=flat-square&logo=openai&logoColor=black)
+![](https://img.shields.io/badge/OAuth%202.0-Token%20Management-1a0010?style=flat-square&logo=auth0&logoColor=e0e0e0)
+![](https://img.shields.io/badge/System%20Design-Multi%20Server%20Pipeline-e0e0e0?style=flat-square&logo=buffer&logoColor=black)
+
+</div>
 
 ---
 
