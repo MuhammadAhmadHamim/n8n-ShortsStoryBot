@@ -53,7 +53,7 @@ Built from scratch. Shipped the same day.
 ```
 
 Every error above is a thing that was figured out in real time with no roadmap.
-Full story here → [LinkedIn Post](YOUR_LINKEDIN_POST_URL)
+Full story here → [LinkedIn Post](https://www.linkedin.com/posts/muhammad-ahmad-hamim-676422350_automation-python-buildinpublic-activity-7436513940110516224-SY-E?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFegozoBjvf84TqOA54tISDeSR84nn_MTXs)
 
 ---
 
@@ -102,7 +102,7 @@ n8n-ShortsStoryBot/
 ├── video_server.py        ←  audio + footage  →  MP4  via FFmpeg
 ├── youtube_server.py      ←  MP4  →  YouTube  via Google API
 ├── StartAutomation.bat    ←  one double-click starts everything
-├── requirements.txt
+├── requirements.txt       ←  to install all dependencies in one command     
 └── README.md
 ```
 
@@ -116,14 +116,29 @@ git clone https://github.com/MuhammadAhmadHamim/n8n-ShortsStoryBot
 pip install -r requirements.txt
 ```
 
-**2 — Drop in your keys**
+**2 — Drop in your keys & paths**
 ```python
+# tts_server.py
+output_file = 'path/to/your/outputFile.mp3'
+os.makedirs('path/to/folder/just before/outputFile/', exist_ok=True)
+
 # video_server.py
 PEXELS_API_KEY = "your-key"
+audio_path = "path/to/your/outputFile.mp3"
+output_path = "path/to/your/outputFile.mp4"
+clips_dir = "path/to/folder/to save/clips"
+os.makedirs("path/to/folder/just before/outputFile", exist_ok=True)
+video_path = "path/to/your/outputFile.mp4"
 
 # youtube_server.py
 CREDENTIALS_FILE = "path/to/credentials.json"
 TOKEN_FILE       = "path/to/token.pickle"
+video_path = data.get('video_path', 'path/to/your/outputFile.mp4')
+
+# startAutomation.bat
+start cmd /k "cd /d path/to/your/ && python tts_server.py"
+start cmd /k "cd /d path/to/your/ && python video_server.py"
+start cmd /k "cd /d path/to/your/ && python youtube_server.py"
 ```
 
 **3 — Google OAuth**
