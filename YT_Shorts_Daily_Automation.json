@@ -1,0 +1,411 @@
+{
+  "name": "YT Shorts Daily Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3ed0fc25-0db5-4be2-aeea-72d8bce94705",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR OPENROUTER_KEY"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"your model name\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are Alex, a real person who collects and shares fascinating human stories. Write a 45-second YouTube Shorts script in first person as Alex personally narrating a story he finds deeply fascinating. Pick ONE story type at random: betrayal, redemption, revenge, life lesson, shocking twist, motivational comeback, or heartbreak. Format: HOOK (first 3 seconds — one shocking sentence starting with 'I came across a story...' or 'Someone told me something that stuck with me...'), STORY (40 seconds — personal narrative tone, like Alex is telling a friend), CTA (last 2 seconds — 'Follow for more stories like this'). Also output: TITLE (SEO YouTube title under 60 chars with emotion keyword), DESCRIPTION (150 words, 3 hashtags: #Shorts #StoryTime #[relevant tag]), TAGS (10 comma-separated YouTube tags). Return everything as JSON with keys: hook, story, cta, title, description, tags\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "fcd8115e-b3de-488c-bcc3-a232fd3c8792",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawContent = $input.first().json.choices[0].message.content;\n\nconst jsonMatch = rawContent.match(/```json\\n([\\s\\S]*?)\\n```/);\nconst jsonString = jsonMatch ? jsonMatch[1] : rawContent;\n\nconst parsed = JSON.parse(jsonString);\n\nreturn [{\n  json: {\n    hook: parsed.hook,\n    story: parsed.story,\n    cta: parsed.cta,\n    title: parsed.title,\n    description: parsed.description,\n    tags: parsed.tags,\n    full_script: parsed.hook + \" \" + parsed.story + \" \" + parsed.cta\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "43cab139-6995-4e93-925a-dc0ea1ea62a7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:5001/tts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\"text\": \"{{ $('Code in JavaScript').item.json.full_script }}\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        0
+      ],
+      "id": "193ff025-242f-49a0-88d1-4e3dfabd71d0",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:5002/video",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={   \"search_term\": \"{{ $('Code in JavaScript').item.json.tags }}\",   \"hook\": \"{{ $('Code in JavaScript').item.json.hook }}\" }",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        0
+      ],
+      "id": "c6432c57-2e3e-46d0-97f7-5ab618a64fa9",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "amount": 8,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        208
+      ],
+      "id": "2e46b64b-24a8-4292-9928-bd9ab7f080a3",
+      "name": "Wait",
+      "webhookId": "7b2750ef-7715-48b9-ae5c-77e97c64a333"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:5003/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"video_path\": \"{{ $json.video_path }}\",\n  \"title\": \"{{ $json.title }}\",\n  \"description\": \"{{ $json.description }}\",\n  \"tags\": \"{{ $json.tags }}\"\n}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        432,
+        208
+      ],
+      "id": "1dbf2498-ea9a-4e28-9564-d766ea050eba",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7c51bcae-3ffc-493f-b404-ac9eec8bde17",
+              "name": "title",
+              "value": "={{ $('Code in JavaScript').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "fff97162-0a65-4066-8746-8e10fbdbf841",
+              "name": "description",
+              "value": "={{ $('Code in JavaScript').item.json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "b87b0d8a-9aed-43ff-a225-0d49e2a1a9d7",
+              "name": "tags",
+              "value": "={{ $('Code in JavaScript').item.json.tags }}",
+              "type": "string"
+            },
+            {
+              "id": "0cc584c7-f761-46c1-ad04-110588b0b4c8",
+              "name": "video_path",
+              "value": "path/to/your/file.mp4",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        208
+      ],
+      "id": "6febb910-f908-4eee-9552-a76c3e686f68",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.toISO() }}",
+            "Title": "={{ $('Code in JavaScript').item.json.title }}",
+            "Views": "0",
+            "Status": "Live",
+            "YouTube URL": "={{ $('HTTP Request3').item.json.video_url \n\n 'Pending' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "YouTube URL",
+              "displayName": "YouTube URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Views",
+              "displayName": "Views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        208
+      ],
+      "id": "8d9425fc-3537-4002-92fc-a5cf557593da",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "your google sheets id",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fe4619ee-3e70-414d-ad96-5aa4ac515c32",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "id": "Q61MfSOdwGT6SraR",
+  "tags": []
+}
