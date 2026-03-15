@@ -98,11 +98,12 @@ n8n  (localhost:5678)
 ```
 n8n-ShortsStoryBot/
 │
-├── tts_server.py          ←  text  →  MP3  via Edge TTS
-├── video_server.py        ←  audio + footage  →  MP4  via FFmpeg
-├── youtube_server.py      ←  MP4  →  YouTube  via Google API
-├── StartAutomation.bat    ←  one double-click starts everything
-├── requirements.txt       ←  to install all dependencies in one command     
+├── tts_server.py                            ←  text  →  MP3  via Edge TTS
+├── video_server.py                          ←  audio + footage  →  MP4  via FFmpeg
+├── youtube_server.py                        ←  MP4  →  YouTube  via Google API
+├── StartAutomation.bat                      ←  one double-click starts everything
+├── requirements.txt                         ←  to install all dependencies in one command
+├── YT_Shorts_Daily_Automation.json          ←  pre-built n8n workflow — import directly     
 └── README.md
 ```
 
@@ -151,12 +152,16 @@ console.cloud.google.com
   → Add Gmail as test user in consent screen
 ```
 
-**4 — Build the n8n workflow**
-```
-run: n8n
-open: http://localhost:5678
-build the workflow per the architecture above
-set schedule trigger → activate
+**4 — Import the n8n workflow**
+```bash
+1. Run `n8n` in terminal
+2. Open http://localhost:5678
+3. Click the menu (top left) → Import from File
+4. Select `YT_Shorts_Daily_Automation.json` from the project folder
+5. Workflow loads with all nodes pre-configured
+6. Set your OpenRouter and Google Sheets credentials inside n8n
+7. Set Schedule Trigger to your preferred time
+8. Click Activate
 ```
 
 **5 — Launch**
