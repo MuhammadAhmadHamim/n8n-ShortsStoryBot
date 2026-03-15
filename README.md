@@ -119,6 +119,13 @@ pip install -r requirements.txt
 
 **2 — Drop in your keys & paths**
 ```python
+#YT_Shorts_Daily_Automation.json
+"value": "YOUR_GOOGLE_SHEET_ID"
+"id": "your google sheets id"
+"instanceId": "YOUR_INSTANCE_ID"
+"value": "path/to/your/file.mp4"
+"value": "Bearer YOUR OPENROUTER_KEY"
+
 # tts_server.py
 output_file = 'path/to/your/outputFile.mp3'
 os.makedirs('path/to/folder/just before/outputFile/', exist_ok=True)
