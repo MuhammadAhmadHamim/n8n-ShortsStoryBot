@@ -114,6 +114,8 @@ n8n-ShortsStoryBot/
 **1 — Clone**
 ```bash
 git clone https://github.com/MuhammadAhmadHamim/n8n-ShortsStoryBot
+cd n8n-ShortsStoryBot
+
 pip install -r requirements.txt
 ```
 
